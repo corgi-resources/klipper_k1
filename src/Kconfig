@@ -2,6 +2,13 @@
 
 mainmenu "Klipper Firmware Configuration"
 
+config HURAKAN_CFG
+    bool "Hurakan default motherboard (Manta M4P) config"
+    default y
+    select LOW_LEVEL_OPTIONS
+    help
+        Enable hurakan configuration for BIQU custom logic.
+
 config LOW_LEVEL_OPTIONS
     bool "Enable extra low-level configuration options"
     help
@@ -11,25 +18,25 @@ config LOW_LEVEL_OPTIONS
 choice
     prompt "Micro-controller Architecture"
     config MACH_AVR
-        bool "Atmega AVR"
+        bool "Atmega AVR" if !HURAKAN_CFG
     config MACH_ATSAM
-        bool "SAM3/SAM4/SAM E70 (Due and Duet)"
+        bool "SAM3/SAM4/SAM E70 (Due and Duet)" if !HURAKAN_CFG
     config MACH_ATSAMD
-        bool "SAMD21/SAMD51/SAME5x"
+        bool "SAMD21/SAMD51/SAME5x" if !HURAKAN_CFG
     config MACH_LPC176X
-        bool "LPC176x (Smoothieboard)"
+        bool "LPC176x (Smoothieboard)" if !HURAKAN_CFG
     config MACH_STM32
         bool "STMicroelectronics STM32"
     config MACH_HC32F460
-        bool "Huada Semiconductor HC32F460"
+        bool "Huada Semiconductor HC32F460" if !HURAKAN_CFG
     config MACH_RP2040
-        bool "Raspberry Pi RP2040"
+        bool "Raspberry Pi RP2040" if !HURAKAN_CFG
     config MACH_PRU
-        bool "Beaglebone PRU"
+        bool "Beaglebone PRU" if !HURAKAN_CFG
     config MACH_LINUX
-        bool "Linux process"
+        bool "Linux process" if !HURAKAN_CFG
     config MACH_SIMU
-        bool "Host simulator"
+        bool "Host simulator" if !HURAKAN_CFG
 endchoice
 
 source "src/avr/Kconfig"
@@ -68,9 +75,11 @@ config USB_DEVICE_ID
     default 0x614e
 config USB_SERIAL_NUMBER_CHIPID
     depends on USB && HAVE_CHIPID
-    default y
+    default y if !HURAKAN_CFG
+    default n if HURAKAN_CFG
 config USB_SERIAL_NUMBER
-    default "12345"
+    default "12345" if !HURAKAN_CFG
+    default "hurakan" if HURAKAN_CFG
 
 menu "USB ids"
     depends on USB && LOW_LEVEL_OPTIONS

@@ -49,6 +49,7 @@ src-$(CONFIG_MACH_STM32F4) += stm32/stm32f4.c generic/armcm_timer.c
 src-$(CONFIG_MACH_STM32F4) += stm32/gpioperiph.c stm32/adc.c stm32/i2c.c
 src-$(CONFIG_MACH_STM32G0) += generic/timer_irq.c stm32/stm32f0_timer.c
 src-$(CONFIG_MACH_STM32G0) += stm32/stm32g0.c stm32/gpioperiph.c
+src-$(CONFIG_HURAKAN_CFG)  += stm32/uc1701_starting.c
 src-$(CONFIG_MACH_STM32G0) += stm32/stm32f0_adc.c stm32/stm32f0_i2c.c
 src-$(CONFIG_MACH_STM32G4) += ../lib/stm32g4/system_stm32g4xx.c
 src-$(CONFIG_MACH_STM32G4) += stm32/stm32g4.c generic/armcm_timer.c

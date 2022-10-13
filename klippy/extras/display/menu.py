@@ -670,14 +670,48 @@ class MenuVSDList(MenuList):
             files = sdcard.get_file_list()
             for fname, fsize in files:
                 self.insert_item(self.manager.menuitem_from(
-                    'command', name=repr(fname), gcode='M23 /%s' % str(fname)))
+                    'vsdcmd', name=repr(fname), gcode='%s' % str(fname)))
 
+class MenuCommand2(MenuElement):
+    def __init__(self, manager, config, **kwargs):
+        super(MenuCommand2, self).__init__(manager, config, **kwargs)
+        self._load_script(config or kwargs, 'gcode')
+        self._load_script(config or kwargs, 'gcode2')
+
+class MenuVSDCmd(MenuList):
+    def _load_gcode(self, config, name, option=None):
+        option = option or name
+        if isinstance(config, dict):
+            return config.get(option, None)
+        else:
+            return self.manager.gcode_macro.load_template(
+                config, option, '')
+
+    def __init__(self, manager, config, **kwargs):
+        super(MenuVSDCmd, self).__init__(manager, config, **kwargs)
+        self.filename = self._load_gcode(config or kwargs, 'gcode')
+
+        def _exit(el, context):
+            el.manager.exit()
+
+        self._itemExit = self.manager.menuitem_from(
+            'command2', name='Start Printing',
+                        gcode='M23 /%s\nM24' % self.filename,
+                        gcode2=_exit)
+
+    def _populate(self):
+        super(MenuVSDCmd, self)._populate()
+        self.insert_item(self.manager.menuitem_from(
+            'command', name='%s' % self.filename, gcode=''))
+        self.insert_item(self._itemExit)
 
 menu_items = {
     'disabled': MenuDisabled,
     'command': MenuCommand,
     'input': MenuInput,
     'list': MenuList,
+    'command2': MenuCommand2,
+    'vsdcmd': MenuVSDCmd,
     'vsdlist': MenuVSDList
 }
 
@@ -928,7 +962,12 @@ class MenuManager:
         if self.running and isinstance(container, MenuContainer):
             self.timer = 0
             current = container.selected_item()
-            if isinstance(current, MenuContainer):
+            if isinstance(current, MenuCommand2):
+                current.run_script('gcode', event=event)
+                current.run_script(event)
+                current.run_script('gcode2', event=event)
+                current.run_script(event)
+            elif isinstance(current, MenuContainer):
                 self.stack_push(current)
             elif isinstance(current, MenuInput):
                 if current.is_editing():

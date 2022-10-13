@@ -288,6 +288,7 @@ sched_clear_shutdown(void)
     SchedStatus.shutdown_status = 0;
 }
 
+uint8_t error_reason_hurakan = 0;
 // Invoke all shutdown functions (as declared by DECL_SHUTDOWN)
 static void
 run_shutdown(int reason)
@@ -298,6 +299,7 @@ run_shutdown(int reason)
         SchedStatus.shutdown_reason = reason;
     SchedStatus.shutdown_status = 2;
     sched_timer_reset();
+    error_reason_hurakan = SchedStatus.shutdown_reason;
     extern void ctr_run_shutdownfuncs(void);
     ctr_run_shutdownfuncs();
     SchedStatus.shutdown_status = 1;
