@@ -239,6 +239,7 @@ armcm_main(void)
     RCC->APB2ENR = 0x00000000;
     RCC->APB3ENR = 0x00000000;
     RCC->APB4ENR = 0x00000000;
+    SYSCFG->PMCR = 0x00000000;
 
     SCB->VTOR = (uint32_t)VectorTable;
 
